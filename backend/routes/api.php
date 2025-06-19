@@ -27,6 +27,9 @@ Route::prefix('/v1')->group(function () {
         Route::get('/user/{username}/followers', [UserController::class, 'followers']);
         Route::get('/user/{username}/following', [UserController::class, 'following']);
 
+        Route::get('/notifications', [UserController::class, 'notifications']);
+        Route::post('/notifications/{id}/read', [UserController::class, 'markNotificationAsRead']);
+
         Route::get('/posts', [PostController::class, 'index']);
         Route::post('/posts', [PostController::class, 'store']);
         Route::get('/posts/{id}', [PostController::class, 'show']);

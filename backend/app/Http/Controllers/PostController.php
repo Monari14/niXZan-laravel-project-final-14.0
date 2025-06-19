@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use App\Notifications\PostLiked;
 
 class PostController extends Controller
 {
@@ -83,6 +84,9 @@ class PostController extends Controller
         $post->likes()->create([
             'user_id' => $request->user()->id,
         ]);
+
+        // Notifica o like
+        $post->user->notify(new PostLiked($request->user(), $post->id));
 
         return response()->json(['message' => 'Post curtido!']);
     }

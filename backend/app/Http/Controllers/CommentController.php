@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use App\Notifications\PostCommented;
 
 class CommentController extends Controller
 {
@@ -25,6 +26,9 @@ class CommentController extends Controller
             'user_id' => $request->user()->id,
             'content' => $request->content,
         ]);
+
+        // Notifica que o post foi comentado
+        $post->user->notify(new PostCommented($request->user(), $post->id));
 
         return response()->json([
             'message' => 'Comentário adicionado com sucesso!',

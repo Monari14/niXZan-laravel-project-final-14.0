@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Notifications\UserFollowed;
 
 class UserController extends Controller
 {
@@ -152,6 +153,9 @@ class UserController extends Controller
             'following_id' => $userToFollow->id,
         ]);
 
+        // Chama a notificação de Follow
+        $userToFollow->notify(new UserFollowed($request->user()));
+
         return response()->json(['message' => 'Agora você está seguindo ' . $username]);
     }
 
@@ -194,5 +198,22 @@ class UserController extends Controller
         $following = $user->following()->with('following:id,username')->get()->pluck('following');
 
         return response()->json($following);
+    }
+
+    public function notifications(Request $request)
+    {
+        return response()->json($request->user()->notifications()->paginate(20));
+    }
+
+    public function markNotificationAsRead(Request $request, $id)
+    {
+        $notification = $request->user()->notifications()->find($id);
+
+        if ($notification) {
+            $notification->markAsRead();
+            return response()->json(['message' => 'Notificação marcada como lida']);
+        }
+
+        return response()->json(['message' => 'Notificação não encontrada'], 404);
     }
 }
