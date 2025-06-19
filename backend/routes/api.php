@@ -19,5 +19,10 @@ Route::prefix('/v1')->group(function () {
         Route::delete('/user', [UserController::class, 'destroy']);
         Route::get('/user/me', [UserController::class, 'me']);
         Route::put('/user/password', [UserController::class, 'updatePassword']);
+
+        Route::post('/user/{username}/follow', [UserController::class, 'follow']);
+        Route::post('/user/{username}/unfollow', [UserController::class, 'unfollow']);
+        Route::get('/user/{username}/followers', [UserController::class, 'followers']);
+        Route::get('/user/{username}/following', [UserController::class, 'following']);
     });
 });
