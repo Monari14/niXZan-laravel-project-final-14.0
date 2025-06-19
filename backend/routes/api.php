@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\CommentController;
 
 Route::prefix('/v1')->group(function () {
     // Autenticação
@@ -24,5 +26,17 @@ Route::prefix('/v1')->group(function () {
         Route::post('/user/{username}/unfollow', [UserController::class, 'unfollow']);
         Route::get('/user/{username}/followers', [UserController::class, 'followers']);
         Route::get('/user/{username}/following', [UserController::class, 'following']);
+
+        Route::get('/posts', [PostController::class, 'index']);
+        Route::post('/posts', [PostController::class, 'store']);
+        Route::get('/posts/{id}', [PostController::class, 'show']);
+        Route::delete('/posts/{id}', [PostController::class, 'destroy']);
+
+        Route::post('/posts/{postId}/like', [PostController::class, 'like']);
+        Route::post('/posts/{postId}/unlike', [PostController::class, 'unlike']);
+
+        Route::post('/posts/{postId}/comments', [CommentController::class, 'store']);
+        Route::get('/posts/{postId}/comments', [CommentController::class, 'index']);
+        Route::delete('/comments/{commentId}', [CommentController::class, 'destroy']);
     });
 });
