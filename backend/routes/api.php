@@ -35,8 +35,11 @@ Route::prefix('/v1')->group(function () {
         Route::post('/posts/{postId}/like', [PostController::class, 'like']);
         Route::post('/posts/{postId}/unlike', [PostController::class, 'unlike']);
 
+        Route::get('/posts/feed', [PostController::class, 'feed']);
+
         Route::post('/posts/{postId}/comments', [CommentController::class, 'store']);
         Route::get('/posts/{postId}/comments', [CommentController::class, 'index']);
         Route::delete('/comments/{commentId}', [CommentController::class, 'destroy']);
+
     });
 });

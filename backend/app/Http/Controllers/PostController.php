@@ -104,4 +104,21 @@ class PostController extends Controller
 
         return response()->json(['message' => 'Curtida removida.']);
     }
+
+    public function feed(Request $request)
+    {
+        $user = $request->user();
+
+        // Pega IDs de quem o usuário segue
+        $followingIds = $user->following()->pluck('following_id');
+
+        // Busca posts dos usuários seguidos, ordenados do mais recente
+        $posts = Post::with('user:id,username,avatar')
+                    ->whereIn('user_id', $followingIds)
+                    ->withCount('likes')
+                    ->latest()
+                    ->paginate(10);
+
+        return response()->json($posts);
+    }
 }
