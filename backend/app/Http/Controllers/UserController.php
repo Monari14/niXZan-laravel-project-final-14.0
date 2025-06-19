@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -38,10 +40,10 @@ class UserController extends Controller
             Storage::disk('p')->delete($user->avatar);
         }
 
-        // Salva o arquivo novo
+        // Salva o novo avatar
         $path = $request->file('avatar')->store('avatars', 'public');
 
-        // Atualiza o campo avatar no DB
+        // Atualiza no banco
         $user->avatar = $path;
         $user->save();
 
@@ -49,5 +51,44 @@ class UserController extends Controller
             'message' => 'Foto de perfil atualizada com sucesso!',
             'avatar_url' => asset('s/' . $path),
         ]);
+    }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name' => 'nullable|string|max:255',
+            'bio' => 'nullable|string|max:500',
+        ]);
+
+        $user->update([
+            'name' => $request->input('name', $user->name),
+            'bio' => $request->input('bio', $user->bio),
+        ]);
+
+        return response()->json([
+            'message' => 'Perfil atualizado com sucesso!',
+            'user' => $user
+        ]);
+    }
+
+    public function destroy(Request $request)
+    {
+        $user = Auth::user();
+
+        // Verificação de senha (opcional)
+        if ($request->has('password') && !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Senha incorreta.'], 403);
+        }
+
+        // Deleta avatar do storage
+        if ($user->avatar && Storage::disk('p')->exists($user->avatar)) {
+            Storage::disk('p')->delete($user->avatar);
+        }
+
+        $user->delete();
+
+        return response()->json(['message' => 'Conta excluída com sucesso.']);
     }
 }
