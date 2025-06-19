@@ -31,6 +31,8 @@ Route::prefix('/v1')->group(function () {
         Route::get('/notifications', [UserController::class, 'notifications']);
         Route::post('/notifications/{id}/read', [UserController::class, 'markNotificationAsRead']);
 
+        Route::put('/user/privacy', [UserController::class, 'updatePrivacy']);
+
         Route::get('/posts', [PostController::class, 'index']);
         Route::post('/posts', [PostController::class, 'store']);
         Route::get('/posts/{id}', [PostController::class, 'show']);

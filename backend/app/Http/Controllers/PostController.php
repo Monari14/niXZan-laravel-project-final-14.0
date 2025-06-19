@@ -112,16 +112,18 @@ class PostController extends Controller
     public function feed(Request $request)
     {
         $user = $request->user();
-
-        // Pega IDs de quem o usuário segue
         $followingIds = $user->following()->pluck('following_id');
 
-        // Busca posts dos usuários seguidos, ordenados do mais recente
+        // Buscar posts de usuários que o usuário segue e que não sejam privados sem permissão
         $posts = Post::with('user:id,username,avatar')
-                    ->whereIn('user_id', $followingIds)
-                    ->withCount('likes')
-                    ->latest()
-                    ->paginate(10);
+            ->whereIn('user_id', $followingIds)
+            ->whereHas('user', function ($q) use ($user) {
+                $q->where('is_private', false)
+                ->orWhere('id', $user->id); // Inclui posts do próprio usuário mesmo que privado
+            })
+            ->withCount('likes')
+            ->latest()
+            ->paginate(10);
 
         return response()->json($posts);
     }

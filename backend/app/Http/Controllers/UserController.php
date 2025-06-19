@@ -12,7 +12,7 @@ use App\Notifications\UserFollowed;
 
 class UserController extends Controller
 {
-    public function getUserByUsername($username)
+    public function getUserByUsername(Request $request, $username)
     {
         $user = User::where('username', $username)->first();
 
@@ -20,12 +20,24 @@ class UserController extends Controller
             return response()->json(['message' => 'Usuário não encontrado'], 404);
         }
 
+        // Se perfil privado
+        if ($user->is_private) {
+            $requester = $request->user();
+
+            // Se não logado, ou não for o próprio usuário e nem seguidor, bloqueia
+            if (!$requester || ($requester->id !== $user->id && !$user->followers->contains($requester->id))) {
+                return response()->json(['message' => 'Perfil privado'], 403);
+            }
+        }
+
         return response()->json([
             'id' => $user->id,
             'username' => $user->username,
             'email' => $user->email,
             'avatar' => $user->avatar ? asset('s/' . $user->avatar) : null,
+            'bio' => $user->bio,
             'created_at' => $user->created_at,
+            'is_private' => $user->is_private,
         ]);
     }
 
@@ -215,5 +227,18 @@ class UserController extends Controller
         }
 
         return response()->json(['message' => 'Notificação não encontrada'], 404);
+    }
+
+    public function updatePrivacy(Request $request)
+    {
+        $request->validate([
+            'is_private' => 'required|boolean',
+        ]);
+
+        $user = $request->user();
+        $user->is_private = $request->is_private;
+        $user->save();
+
+        return response()->json(['message' => 'Configuração de privacidade atualizada.', 'is_private' => $user->is_private]);
     }
 }
