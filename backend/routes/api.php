@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\UserSettingsController;
 
 Route::prefix('/v1')->group(function () {
     // Autenticação
@@ -50,5 +51,8 @@ Route::prefix('/v1')->group(function () {
         Route::post('/messages/{username}', [MessageController::class, 'send']);
         Route::get('/messages/{username}', [MessageController::class, 'conversation']);
         Route::post('/messages/{id}/read', [MessageController::class, 'markAsRead']);
+
+        Route::get('/user/settings', [UserSettingsController::class, 'show']);
+        Route::put('/user/settings', [UserSettingsController::class, 'update']);
     });
 });
