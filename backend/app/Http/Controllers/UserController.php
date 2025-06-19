@@ -91,4 +91,38 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Conta excluída com sucesso.']);
     }
+
+    public function me(Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'id' => $user->id,
+            'username' => $user->username,
+            'email' => $user->email,
+            'name' => $user->name,
+            'bio' => $user->bio,
+            'avatar' => $user->avatar ? asset('s/' . $user->avatar) : null,
+            'created_at' => $user->created_at,
+        ]);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed', // exige new_password_confirmation
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json(['message' => 'Senha atual incorreta.'], 403);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json(['message' => 'Senha atualizada com sucesso.']);
+    }
 }

@@ -12,9 +12,12 @@ Route::prefix('/v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/logout', [AuthController::class, 'logout']);
+
         Route::get('/{username}', [UserController::class, 'getUserByUsername']);
         Route::post('/user/avatar', [UserController::class, 'updateAvatar']);
         Route::put('/user', [UserController::class, 'update']);
         Route::delete('/user', [UserController::class, 'destroy']);
+        Route::get('/user/me', [UserController::class, 'me']);
+        Route::put('/user/password', [UserController::class, 'updatePassword']);
     });
 });
