@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\MessageController;
 
 Route::prefix('/v1')->group(function () {
     // Autenticação
@@ -44,5 +45,8 @@ Route::prefix('/v1')->group(function () {
         Route::get('/posts/{postId}/comments', [CommentController::class, 'index']);
         Route::delete('/comments/{commentId}', [CommentController::class, 'destroy']);
 
+        Route::post('/messages/{username}', [MessageController::class, 'send']);
+        Route::get('/messages/{username}', [MessageController::class, 'conversation']);
+        Route::post('/messages/{id}/read', [MessageController::class, 'markAsRead']);
     });
 });
