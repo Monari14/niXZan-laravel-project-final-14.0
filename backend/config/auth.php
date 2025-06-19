@@ -93,9 +93,10 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,
+            'redirect_url' => env('FRONTEND_URL', 'http://localhost:3000/reset-password'), // sua URL frontend para reset
         ],
     ],
 
