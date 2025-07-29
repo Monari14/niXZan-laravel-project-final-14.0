@@ -9,6 +9,9 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserSettingsController;
 
 Route::prefix('/v1')->group(function () {
+    Route::get('/status', function () {
+        return response()->json(['status' => '14']);
+    });
     // Autenticação
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
